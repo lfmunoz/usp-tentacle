@@ -1,8 +1,9 @@
-package eco.usp.automate.usptest
+package eco.usp.automate.workflow
 
 import com.attendcall.genesis.rest.LoadWorkflows
 import eco.usp.automate.USPControllerUtils
 import eco.usp.automate.USPControllerUtils.Companion.FILE_NAME
+import eco.usp.automate.USPControllerUtils.Companion.workflowTable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -17,21 +18,12 @@ class CRUDOperationsTEST{
 
   lateinit var restTemplate: RestTemplate
   lateinit var token: String
-  lateinit var workflowTable: Map<String, String>
 
   @BeforeAll
   internal fun beforeAll() {
     restTemplate = RestTemplate()
     token = USPControllerUtils.getKeyCloakToken(restTemplate)
-
-    val inputText = LoadWorkflows::class.java.getResource(FILE_NAME).readText().trim()
-    workflowTable = inputText.split("\n").asSequence().map {
-        val list = it.split(",")
-       Pair(list[0], list[1])
-    }.toMap()
-
   }
-
 
   @Test
   fun `4AddMessageAllowPartialTrue`() {

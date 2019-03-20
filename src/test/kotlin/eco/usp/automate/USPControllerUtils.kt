@@ -74,6 +74,7 @@ class USPControllerUtils {
             }
         }
 
+        // allow partials is set to true by default in the workflow
         fun Add(restTemplate: RestTemplate, token: String, addObject: AddObject, endpointId: String = ENDPOINT_ID) : Pair<Int, String?> {
             val id = workflowTable["add"]!!
             val reqHeaders = HttpHeaders()
@@ -83,6 +84,26 @@ class USPControllerUtils {
             reqHeaders.set("Authorization", "Bearer ${token}")
 
             val request = HttpEntity(addObject, reqHeaders)
+            try {
+                val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
+                //println(response)
+                return Pair(response.statusCodeValue, response.body)
+            } catch (e : HttpStatusCodeException) {
+                //println(e.getStatusCode().value())
+                //println(e.responseBodyAsString)
+                return Pair(e.statusCode.value(), e.responseBodyAsString)
+            }
+        }
+
+        fun Delete(restTemplate: RestTemplate, token: String, deleteObject: DeleteObject, endpointId: String = ENDPOINT_ID) : Pair<Int, String?> {
+            val id = workflowTable["delete"]!!
+            val reqHeaders = HttpHeaders()
+            reqHeaders.accept = listOf(MediaType.ALL)
+            reqHeaders.contentType = MediaType.APPLICATION_JSON
+            reqHeaders.connection = listOf("close")
+            reqHeaders.set("Authorization", "Bearer ${token}")
+
+            val request = HttpEntity(deleteObject, reqHeaders)
             try {
                 val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
                 //println(response)
@@ -136,6 +157,17 @@ data class WorkflowDefinition(
         var eventTrigger: String? = "NONE"
 ) {}
 
+data class WorkflowResponse(
+    var errors: List<Errors>,
+    var parameters: Map<String, String>
+)
+
+data class Errors(
+    var parameter: String?,
+    var errorCode: Int?,
+    var errorMessage: String?
+) {}
+
 data class Parameter(
         var param: String,
         var value: String,
@@ -152,6 +184,15 @@ data class AddObject(
 }
 
 data class GpvObject(
+        var parameters: ArrayList<String> = ArrayList<String>()
+) {
+    fun add(parameter: String) {
+        parameters.add(parameter)
+    }
+}
+
+data class DeleteObject(
+        var allowPartial: Boolean = false,
         var parameters: ArrayList<String> = ArrayList<String>()
 ) {
     fun add(parameter: String) {

@@ -39,7 +39,6 @@ class AccessControlTEST {
         addObject.add(Parameter("NotifType", "ValueChange", true))
         addObject.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
         val result = USPControllerUtils.Add(restTemplate, token, addObject)
-
         assertThat(result.first).isEqualTo(200)
         println(result.second)
 
@@ -50,10 +49,18 @@ class AccessControlTEST {
         val parameters = GpvObject()
         parameters.add("Device.DeviceInfo.")
         val result = USPControllerUtils.Gpv(restTemplate, token, parameters)
-
         assertThat(result.first).isEqualTo(200)
         println(result.second)
+    }
 
+    @Test
+    fun `delete Object`() {
+        val deleteObject = DeleteObject(true)
+        deleteObject.add("Device.LocalAgent.Subscription.[ID==\"SUBS1\"].")
+        deleteObject.add("Device.LocalAgent.Subscription.10000.")
+        val result = USPControllerUtils.Delete(restTemplate, token, deleteObject)
+        assertThat(result.first).isEqualTo(200)
+        println(result.second)
     }
 
 } // end of
