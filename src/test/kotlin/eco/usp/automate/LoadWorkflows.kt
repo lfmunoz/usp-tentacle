@@ -1,26 +1,19 @@
 package com.attendcall.genesis.rest
 
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.mockk.*
-import io.restassured.RestAssured.given
-import org.assertj.core.api.Assertions
+import eco.usp.automate.USPControllerUtils.Companion.getKeyCloakToken
+import eco.usp.automate.WorkflowDefinition
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONArray
-import org.json.JSONObject
 import org.junit.jupiter.api.*
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.*
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 import java.io.File
+import java.lang.RuntimeException
+import java.net.URLEncoder
 import java.time.Instant
 import java.util.*
 import java.text.SimpleDateFormat
@@ -89,7 +82,7 @@ class LoadWorkflows {
     @BeforeAll
     internal fun beforeAll() {
         restTemplate = RestTemplate()
-        token = getKeyCloakToken()
+        token = getKeyCloakToken(restTemplate)
     }
 
     //================================================================================
@@ -108,112 +101,130 @@ class LoadWorkflows {
     // Test Cases
     //================================================================================
     @Test
-    fun `get list of workflows`() {
-        val reqHeaders = HttpHeaders()
-        reqHeaders.accept = listOf(MediaType.APPLICATION_JSON)
-        reqHeaders.contentType = MediaType.APPLICATION_JSON
-        reqHeaders.set("Authorization", "Bearer ${token}")
-        val request = HttpEntity<String>(reqHeaders)
-        val response = restTemplate.exchange("$USP_HOST/api/workflows", HttpMethod.GET,
-                request, String::class.java)
-
-        val result = JSONArray(response.body)
-
-        println("------------- Workflows (${result.length()}) -------------")
-        for (i in 0 until result.length()) {
-            println(result.getJSONObject(i).getString("name"))
+    fun `import workflows`() {
+        val stream = LoadWorkflows::class.java.getResourceAsStream("/workflows")
+        val files = stream.bufferedReader().use { it.readLines() }
+        files.forEach {
+            val name = it
+            val key = name.replace(" ", "").replace("-", "").replace(".js", "")
+            val fileName= "/workflows/$name"
+            val script = LoadWorkflows::class.java.getResource(fileName).readText()
+            val nowAsISO = getCurrentTime()
+            val workflowDefinition = WorkflowDefinition(key, name, script, nowAsISO, nowAsISO, null)
+            //println(workflowDefinition)
+            try {
+                postWorkflowDefinition(workflowDefinition)
+            } catch (e: Exception) {
+                println("Unable to push workflow $name")
+            }
         }
     }
 
+    @Test
+    fun `show workflows`() {
+        val workflows = getListOfWorkflows()
+        workflows.toSortedMap().forEach {
+           //println("key = ${it.key}, id = ${it.value}")
+           println("${it.key},${it.value}")
+        }
+    }
+
+    @Test
+    fun `run 10DeleteMessageAllowPartialFalse`() {
+        val agent = "os::002456-testing0"
+        val workflows = getListOfWorkflows()
+        val id = workflows["10DeleteMessageAllowPartialFalse"] ?: throw RuntimeException("key not found")
+        runWorkflow(id, agent)
+    }
 
 
     @Test
-    fun `import workflows`() {
-
-        val stream = LoadWorkflows::class.java.getResourceAsStream("/workflows")
-        val files = stream.bufferedReader().use { it.readLines() }
-
+    fun `run `() {
+        val agent = "os::002456-testing0"
+        val workflows = getListOfWorkflows()
         /*
-        files.forEach {
-            println(it)
-        }
+        val id = workflows["10DeleteMessageAllowPartialFalse"]!!
+        val id = workflows["11GetMessageParameterPathOnly"]!!
+        val id = workflows["12GetMessageObjectPathsOnly"]!!
+        val id = workflows["13GetMessageMixedPaths"]!!
+        val id = workflows["14GetMessageSearchPaths"]!!
+        val id = workflows["15GetMessageValidandInvalidPaths"]!!
+        val id = workflows["21SubscriptionCreationUsingValueChange"]!!
+        val id = workflows["22SubscriptionDisableUsingValueChange"]!!
+        val id = workflows["23SubscriptionDeletionUsingValueChange"]!!
+        val id = workflows["24SubscriptiononObjectCreation"]!!
+        val id = workflows["25SubscriptiononObjectDeletion"]!!
         */
-        val name = files.first()
-        val key = name.replace(" ", "").replace("-", "").replace(".js", "")
-
-        val fileName= "/workflows/$name"
-        println(fileName)
-        val script = LoadWorkflows::class.java.getResource(fileName).readText()
-
-        // = File().readText(Charsets.UTF_8)
-       // println(name)
-       // println(key)
-       // println(script)
+        val id = workflows["23SubscriptionDeletionUsingValueChange"]!!
+        runWorkflow(id, agent)
+    }
 
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // Helper functions
+    ////////////////////////////////////////////////////////////////////////////////
+    private fun getCurrentTime() : String {
         val tz = TimeZone.getTimeZone("UTC")
         //val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm.ss'Z'") // Quoted "Z" to indicate UTC, no timezone offset
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         df.timeZone = tz
-        val nowAsISO = df.format(Date())
+        return df.format(Date())
+    }
 
-
-        val workflowDefinition = WorkflowDefinition("string", "string", "script", nowAsISO, nowAsISO, null)
-        println(workflowDefinition)
-
-
+    private fun postWorkflowDefinition(workflowDefinition: WorkflowDefinition) {
         val reqHeaders = HttpHeaders()
         reqHeaders.accept = listOf(MediaType.ALL)
         reqHeaders.contentType = MediaType.APPLICATION_JSON
         reqHeaders.connection = listOf("close")
         reqHeaders.set("Authorization", "Bearer ${token}")
         val request = HttpEntity<WorkflowDefinition>(workflowDefinition, reqHeaders)
-        //val response = restTemplate.exchange("$USP_HOST/api/workflow-definitions", HttpMethod.POST,
-        //        request, String::class.java)
         val response = restTemplate.exchange("$USP_HOST/api/workflow-definitions",  HttpMethod.POST,request, String::class.java)
-
-        val result = JSONArray(response)
-
-
+        println(response)
     }
 
-    //
-    fun getKeyCloakToken() : String {
+    private fun runWorkflow(id: String, endpointId: String) {
         val reqHeaders = HttpHeaders()
-        reqHeaders.accept = listOf(MediaType.APPLICATION_JSON)
+        reqHeaders.accept = listOf(MediaType.ALL)
+        reqHeaders.contentType = MediaType.APPLICATION_JSON
+        reqHeaders.connection = listOf("close")
+        reqHeaders.set("Authorization", "Bearer ${token}")
 
         val dataMap = LinkedMultiValueMap<String, String>()
-        dataMap.add("client_id", "usp-control")
-        dataMap.add("client_secret", CLIENT_SECRET)
-        dataMap.add("username", KEYCLOAK_USERNAME)
-        dataMap.add("password", KEYCLOAK_PASSWORD)
-        dataMap.add("grant_type", "password")
-
         val request = HttpEntity(dataMap, reqHeaders)
+        try {
+            val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
+            println(response)
+        } catch (e : HttpStatusCodeException) {
+            println(e.getStatusCode().value())
+            println(e.responseBodyAsString)
+        }
+    }
 
-        val response = restTemplate.exchange("${KEYCLOAK_HOST}/auth/realms/ECO/protocol/openid-connect/token",
-                HttpMethod.POST, request, HashMap<String, String>()::class.java).body!!
 
-        println(response["access_token"])
-        return response["access_token"]!!
+
+    fun getListOfWorkflows() : Map<String, String>{
+        val reqHeaders = HttpHeaders()
+        reqHeaders.accept = listOf(MediaType.APPLICATION_JSON)
+        reqHeaders.contentType = MediaType.APPLICATION_JSON
+        reqHeaders.set("Authorization", "Bearer ${token}")
+        val request = HttpEntity<String>(reqHeaders)
+        val response = restTemplate.exchange("$USP_HOST/api/workflows?size=100", HttpMethod.GET,
+                request, String::class.java)
+
+        val result = JSONArray(response.body)
+
+        val map = HashMap<String, String>()
+        //println("------------- Workflows (${result.length()}) -------------")
+        for (i in 0 until result.length()) {
+            //println(result.getJSONObject(i).getString("name"))
+            val key =  result.getJSONObject(i).getString("key")
+            val id = result.getJSONObject(i).getString("id")
+            map[key]  = id
+        }
+        return map
     }
 
 } // end of class
 
-
-data class WorkflowDefinition(
-        var key: String?,
-        var name: String?,
-        var script: String?,
-        var createdDate: String? = null,
-        var lastModifiedDate: String? = null,
-        var id: Long? = null,
-        var createdBy: String? = "system",
-        var lastModifiedBy: String = "system",
-        var type: String? = "JS_V1",
-        var systemWorkflow: Boolean = false,
-        var description: String? = null,
-        var eventTrigger: String? = "NONE"
-) {}
 
 
