@@ -1,7 +1,6 @@
 package eco.usp.automate.api
 
 import eco.usp.automate.*
-import eco.usp.automate.USPControllerUtils.Companion.workflowTable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -14,13 +13,12 @@ import org.springframework.web.client.RestTemplate
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CRUDOperationsTEST {
 
-    lateinit var restTemplate: RestTemplate
-    lateinit var token: String
+    // fields
+    lateinit var api : USPControllerAPI
 
     @BeforeAll
     internal fun beforeAll() {
-        restTemplate = RestTemplate()
-        token = USPControllerUtils.getKeyCloakToken(restTemplate)
+        api = USPControllerAPI()
     }
 
     // 4 - Add Message - Allow Partial True
@@ -39,7 +37,7 @@ class CRUDOperationsTEST {
         objData.add(Parameter("NotifType", "ValueChange", true))
         objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
 
-        var result = USPControllerUtils.Add(restTemplate, token, objData)
+        var result = api.Add(objData)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
 
@@ -54,7 +52,7 @@ class CRUDOperationsTEST {
         objData.add(Parameter("NotifType", "ValueChange", true))
         objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
 
-        result = USPControllerUtils.Add(restTemplate, token, objData)
+        result = api.Add(objData)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
 
@@ -70,7 +68,7 @@ class CRUDOperationsTEST {
         objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
         objData.add(Parameter("InvalidParameter", "true", true))
 
-        result = USPControllerUtils.Add(restTemplate, token, objData)
+        result = api.Add(objData)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
 
@@ -82,7 +80,7 @@ class CRUDOperationsTEST {
     fun pathExists(path: String): Boolean {
         var gpv = GpvObject()
         gpv.add(path)
-        var gpvResult = USPControllerUtils.Gpv(restTemplate, token, gpv)
+        var gpvResult = api.Get(gpv)
         if (gpvResult.second?.parameters?.size != 0) {
             return true
         }
@@ -92,7 +90,7 @@ class CRUDOperationsTEST {
     fun deletePath(path: String) {
         val deleteObject = DeleteObject()
         deleteObject.add(path)
-        val result = USPControllerUtils.Delete(restTemplate, token, deleteObject)
+        val result = api.Delete(deleteObject)
         assertThat(result.first).isEqualTo(200)
     }
 

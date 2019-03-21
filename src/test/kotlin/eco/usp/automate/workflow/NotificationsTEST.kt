@@ -1,12 +1,10 @@
 package eco.usp.automate.workflow
 
-import eco.usp.automate.USPControllerUtils
-import eco.usp.automate.USPControllerUtils.Companion.workflowTable
+import eco.usp.automate.USPControllerAPI
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.springframework.web.client.RestTemplate
 
 /**
  *  NotificationsTEST
@@ -15,14 +13,11 @@ import org.springframework.web.client.RestTemplate
 class NotificationsTEST {
 
     // fields
-    lateinit var restTemplate: RestTemplate
-    lateinit var token: String
+    lateinit var api : USPControllerAPI
 
-    // init
     @BeforeAll
     internal fun beforeAll() {
-        restTemplate = RestTemplate()
-        token = USPControllerUtils.getKeyCloakToken(restTemplate)
+        api = USPControllerAPI()
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -30,70 +25,70 @@ class NotificationsTEST {
     ////////////////////////////////////////////////////////////////////////
     @Test
     fun `21SubscriptionCreationUsingValueChange`() {
-        val workflowId = workflowTable["21SubscriptionCreationUsingValueChange"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["21SubscriptionCreationUsingValueChange"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
 
     @Test
     fun `22SubscriptionDisableUsingValueChange`() {
-        val workflowId = workflowTable["22SubscriptionDisableUsingValueChange"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["22SubscriptionDisableUsingValueChange"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
 
     @Test
     fun `23SubscriptionDeletionUsingValueChange`() {
-        val workflowId = workflowTable["23SubscriptionDeletionUsingValueChange"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["23SubscriptionDeletionUsingValueChange"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
 
     @Test
     fun `24SubscriptiononObjectCreation`() {
-        val workflowId = workflowTable["24SubscriptiononObjectCreation"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["24SubscriptiononObjectCreation"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
 
     @Test
     fun `25SubscriptiononObjectDeletion`() {
-        val workflowId = workflowTable["25SubscriptiononObjectDeletion"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["25SubscriptiononObjectDeletion"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
 
     @Test
     fun `26OnBoardRequest`() {
-        val workflowId = workflowTable["26OnBoardRequest"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["26OnBoardRequest"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
 
     @Test
     fun `27SubscriptiononNotificationRetry`() {
-        val workflowId = workflowTable["27SubscriptiononNotificationRetry"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["27SubscriptiononNotificationRetry"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
     @Test
     fun `28SubscriptiononNotificationRetryRetryExpiration`() {
-        val workflowId = workflowTable["28SubscriptiononNotificationRetryRetryExpiration"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["28SubscriptiononNotificationRetryRetryExpiration"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
     @Test
     fun `29SubscriptionExpiration`() {
-        val workflowId = workflowTable["29SubscriptionExpiration"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["29SubscriptionExpiration"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }

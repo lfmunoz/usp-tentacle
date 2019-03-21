@@ -1,9 +1,6 @@
 package eco.usp.automate.workflow
 
-import com.attendcall.genesis.rest.LoadWorkflows
-import eco.usp.automate.USPControllerUtils
-import eco.usp.automate.USPControllerUtils.Companion.FILE_NAME
-import eco.usp.automate.USPControllerUtils.Companion.workflowTable
+import eco.usp.automate.USPControllerAPI
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -16,102 +13,101 @@ import org.springframework.web.client.RestTemplate
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CRUDOperationsTEST{
 
-  lateinit var restTemplate: RestTemplate
-  lateinit var token: String
+    // fields
+    lateinit var api : USPControllerAPI
 
-  @BeforeAll
-  internal fun beforeAll() {
-    restTemplate = RestTemplate()
-    token = USPControllerUtils.getKeyCloakToken(restTemplate)
-  }
+    @BeforeAll
+    internal fun beforeAll() {
+        api = USPControllerAPI()
+    }
 
   @Test
   fun `4AddMessageAllowPartialTrue`() {
-    val workflowId = workflowTable["4AddMessageAllowPartialTrue"]!!
-    val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+    val workflowId = api.workflowTable["4AddMessageAllowPartialTrue"]!!
+    val result = api.runWorkflow(workflowId)
     println(result.second)
     assertThat(result.first).isEqualTo(200)
   }
 
   @Test
   fun `5AddMessageAllowPartialFalse`() {
-      val workflowId = workflowTable["5AddMessageAllowPartialFalse"]!!
-      val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+      val workflowId = api.workflowTable["5AddMessageAllowPartialFalse"]!!
+      val result = api.runWorkflow(workflowId)
       println(result.second)
       assertThat(result.first).isEqualTo(200)
   }
 
   @Test
   fun `6SetMessageAllowPartialTrue`() {
-      val workflowId = workflowTable["6SetMessageAllowPartialTrue"]!!
-      val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+      val workflowId = api.workflowTable["6SetMessageAllowPartialTrue"]!!
+      val result = api.runWorkflow(workflowId)
       println(result.second)
       assertThat(result.first).isEqualTo(200)
   }
 
   @Test
   fun `7SetMessageAllowPartialFalse`() {
-      val workflowId = workflowTable["7SetMessageAllowPartialFalse"]!!
-      val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+      val workflowId = api.workflowTable["7SetMessageAllowPartialFalse"]!!
+      val result = api.runWorkflow(workflowId)
       println(result.second)
       assertThat(result.first).isEqualTo(200)
   }
 
   @Test
   fun `8SetMessageSearchPaths`() {
-      val workflowId = workflowTable["8SetMessageSearchPaths"]!!
-      val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+      val workflowId = api.workflowTable["8SetMessageSearchPaths"]!!
+      val result = api.runWorkflow(workflowId)
       println(result.second)
       assertThat(result.first).isEqualTo(200)
   }
 
   @Test
   fun `9DeleteMessageAllowPartialTrue`() {
-      val workflowId = workflowTable["9DeleteMessageAllowPartialTrue"]!!
-      val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+      val workflowId = api.workflowTable["9DeleteMessageAllowPartialTrue"]!!
+      val result = api.runWorkflow(workflowId)
       println(result.second)
       assertThat(result.first).isEqualTo(200)
   }
 
     @Test
     fun `10DeleteMessageAllowPartialFalse`() {
-        val workflowId = workflowTable["10DeleteMessageAllowPartialFalse"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["10DeleteMessageAllowPartialFalse"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
     @Test
     fun `11GetMessageParameterPathOnly`() {
-        val workflowId = workflowTable["11GetMessageParameterPathOnly"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["11GetMessageParameterPathOnly"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
     @Test
     fun `12GetMessageObjectPathsOnly`() {
-        val workflowId = workflowTable["12GetMessageObjectPathsOnly"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["12GetMessageObjectPathsOnly"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
     @Test
     fun `13GetMessageMixedPaths`() {
-        val workflowId = workflowTable["13GetMessageMixedPaths"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["13GetMessageMixedPaths"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
     @Test
     fun `14GetMessageSearchPaths`() {
-        val workflowId = workflowTable["14GetMessageSearchPaths"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["14GetMessageSearchPaths"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
     @Test
     fun `15GetMessageValidandInvalidPaths`() {
-        val workflowId = workflowTable["15GetMessageValidandInvalidPaths"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["15GetMessageValidandInvalidPaths"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }

@@ -1,7 +1,6 @@
 package eco.usp.automate.api
 
-import eco.usp.automate.USPControllerUtils
-import eco.usp.automate.USPControllerUtils.Companion.workflowTable
+import eco.usp.automate.USPControllerAPI
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -15,14 +14,12 @@ import org.springframework.web.client.RestTemplate
 class AccessControlTEST {
 
     // fields
-    lateinit var restTemplate: RestTemplate
-    lateinit var token: String
+    lateinit var api : USPControllerAPI
 
     // init
     @BeforeAll
     internal fun beforeAll() {
-        restTemplate = RestTemplate()
-        token = USPControllerUtils.getKeyCloakToken(restTemplate)
+        api = USPControllerAPI()
     }
 
     ////////////////////////////////////////////////////////////////////////

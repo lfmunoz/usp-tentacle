@@ -1,7 +1,6 @@
 package eco.usp.automate.workflow
 
-import eco.usp.automate.USPControllerUtils
-import eco.usp.automate.USPControllerUtils.Companion.workflowTable
+import eco.usp.automate.USPControllerAPI
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -15,24 +14,11 @@ import org.springframework.web.client.RestTemplate
 class AccessControlTEST {
 
     // fields
-    lateinit var restTemplate: RestTemplate
-    lateinit var token: String
-    //lateinit var workflowTable: Map<String, String>
+    lateinit var api : USPControllerAPI
 
-    // init
     @BeforeAll
     internal fun beforeAll() {
-        restTemplate = RestTemplate()
-        token = USPControllerUtils.getKeyCloakToken(restTemplate)
-
-        /*
-        val inputText = LoadWorkflows::class.java.getResource(FILE_NAME).readText().trim()
-        workflowTable = inputText.split("\n").asSequence().map {
-            val list = it.split(",")
-            Pair(list[0], list[1])
-        }.toMap()
-        */
-
+        api = USPControllerAPI()
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -40,8 +26,8 @@ class AccessControlTEST {
     ////////////////////////////////////////////////////////////////////////
     @Test
     fun `35tofu`() {
-        val workflowId = workflowTable["35tofu"]!!
-        val result = USPControllerUtils.runWorkflow(restTemplate, token, workflowId)
+        val workflowId = api.workflowTable["35tofu"]!!
+        val result = api.runWorkflow(workflowId)
         println(result.second)
         assertThat(result.first).isEqualTo(200)
     }
