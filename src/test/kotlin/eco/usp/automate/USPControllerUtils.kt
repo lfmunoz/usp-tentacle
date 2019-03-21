@@ -75,7 +75,7 @@ class USPControllerUtils {
         }
 
         // allow partials is set to true by default in the workflow
-        fun Add(restTemplate: RestTemplate, token: String, addObject: AddObject, endpointId: String = ENDPOINT_ID) : Pair<Int, String?> {
+        fun Add(restTemplate: RestTemplate, token: String, addObject: AddObject, endpointId: String = ENDPOINT_ID) : Pair<Int, WorkflowResponse?> {
             val id = workflowTable["add"]!!
             val reqHeaders = HttpHeaders()
             reqHeaders.accept = listOf(MediaType.ALL)
@@ -87,11 +87,12 @@ class USPControllerUtils {
             try {
                 val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
                 //println(response)
-                return Pair(response.statusCodeValue, response.body)
+                return Pair(response.statusCodeValue, response.body?.fromJson())
             } catch (e : HttpStatusCodeException) {
                 //println(e.getStatusCode().value())
                 //println(e.responseBodyAsString)
-                return Pair(e.statusCode.value(), e.responseBodyAsString)
+                //return Pair(e.statusCode.value(), e.responseBodyAsString)
+                return Pair(e.statusCode.value(), e.responseBodyAsString?.fromJson())
             }
         }
 
@@ -115,7 +116,7 @@ class USPControllerUtils {
             }
         }
 
-        fun Gpv(restTemplate: RestTemplate, token: String, parameters: GpvObject, endpointId: String = ENDPOINT_ID) : Pair<Int, String?> {
+        fun Gpv(restTemplate: RestTemplate, token: String, parameters: GpvObject, endpointId: String = ENDPOINT_ID) : Pair<Int, WorkflowResponse?> {
             val id = workflowTable["gpv"]!!
             val reqHeaders = HttpHeaders()
             reqHeaders.accept = listOf(MediaType.ALL)
@@ -127,11 +128,11 @@ class USPControllerUtils {
             try {
                 val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
                 //println(response)
-                return Pair(response.statusCodeValue, response.body)
+                return Pair(response.statusCodeValue, response.body?.fromJson())
             } catch (e : HttpStatusCodeException) {
                 //println(e.getStatusCode().value())
                 //println(e.responseBodyAsString)
-                return Pair(e.statusCode.value(), e.responseBodyAsString)
+                return Pair(e.statusCode.value(), e.responseBodyAsString?.fromJson())
             }
         }
 
