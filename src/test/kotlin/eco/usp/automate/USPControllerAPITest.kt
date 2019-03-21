@@ -1,6 +1,6 @@
 package eco.usp.automate
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.lang.RuntimeException
@@ -58,9 +58,9 @@ class USPControllerAPITest {
         addObject.add(Parameter("Enable", "false", true))
         addObject.add(Parameter("NotifType", "ValueChange", true))
         addObject.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
-        val result = api.Add(addObject)
-        Assertions.assertThat(result.first).isEqualTo(200)
-        println(result.second)
+        val response = api.Add(addObject)
+        assertThat(response.code).isEqualTo(200)
+        println(response.body)
 
     }
 
@@ -69,8 +69,8 @@ class USPControllerAPITest {
         val parameters = GpvObject()
         parameters.add("Device.DeviceInfo.")
         val result = api.Get(parameters)
-        Assertions.assertThat(result.first).isEqualTo(200)
-        println(result.second)
+        assertThat(result.code).isEqualTo(200)
+        println(result.body)
     }
 
     @Test
@@ -79,8 +79,8 @@ class USPControllerAPITest {
         deleteObject.add("Device.LocalAgent.Subscription.[ID==\"SUBS1\"].")
         deleteObject.add("Device.LocalAgent.Subscription.10000.")
         val result = api.Delete(deleteObject)
-        Assertions.assertThat(result.first).isEqualTo(200)
-        println(result.second)
+        assertThat(result.code).isEqualTo(200)
+        println(result.body)
     }
 
 }

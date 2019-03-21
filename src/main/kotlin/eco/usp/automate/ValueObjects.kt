@@ -19,6 +19,14 @@ data class WorkflowDefinition(
         var eventTrigger: String? = "NONE"
 ) {}
 
+///////////////////////////////////////////////////////////////
+// Workflow Response
+///////////////////////////////////////////////////////////////
+data class APIResponse(
+        var code: Int,
+        var body: WorkflowResponse?
+)
+
 data class WorkflowResponse(
         var errors: List<Errors>,
         var parameters: Map<String, String>
@@ -36,7 +44,19 @@ data class Parameter(
         var required: Boolean = false
 ) {}
 
+///////////////////////////////////////////////////////////////
+// Post Objects for USP API
+///////////////////////////////////////////////////////////////
 data class AddObject(
+        var basePath: String,
+        var parameters: ArrayList<Parameter> = ArrayList<Parameter>()
+) {
+    fun add(parameter: Parameter) {
+        parameters.add(parameter)
+    }
+}
+
+data class SetObject(
         var basePath: String,
         var parameters: ArrayList<Parameter> = ArrayList<Parameter>()
 ) {
@@ -62,3 +82,12 @@ data class DeleteObject(
     }
 }
 
+data class OperateObject(
+        var command: String,
+        var sendResp: Boolean = false,
+        var arguments: HashMap<String, String> = HashMap<String, String>()
+) {
+    fun put(key: String, value: String) {
+        arguments[key] =  value
+    }
+}

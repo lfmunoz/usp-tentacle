@@ -145,8 +145,8 @@ class USPControllerAPI {
      *    Operate
      */
     // allow partials is set to true by default in the workflow
-    fun Add(addObject: AddObject, endpointId: String = ENDPOINT_ID): Pair<Int, WorkflowResponse?> {
-        val id = workflowTable["add"]!!
+    fun Add(addObject: AddObject, endpointId: String = ENDPOINT_ID): APIResponse {
+        val id = workflowTable["addApi"]!!
         val reqHeaders = HttpHeaders()
         reqHeaders.accept = listOf(MediaType.ALL)
         reqHeaders.contentType = MediaType.APPLICATION_JSON
@@ -157,17 +157,17 @@ class USPControllerAPI {
         try {
             val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
             //println(response)
-            return Pair(response.statusCodeValue, response.body?.fromJson())
+            return APIResponse(response.statusCodeValue, response.body?.fromJson())
         } catch (e: HttpStatusCodeException) {
             //println(e.getStatusCode().value())
             //println(e.responseBodyAsString)
             //return Pair(e.statusCode.value(), e.responseBodyAsString)
-            return Pair(e.statusCode.value(), e.responseBodyAsString?.fromJson())
+            return APIResponse(e.statusCode.value(), e.responseBodyAsString?.fromJson())
         }
     }
 
-    fun Delete(deleteObject: DeleteObject, endpointId: String = ENDPOINT_ID): Pair<Int, String?> {
-        val id = workflowTable["delete"]!!
+    fun Delete(deleteObject: DeleteObject, endpointId: String = ENDPOINT_ID): APIResponse {
+        val id = workflowTable["deleteApi"]!!
         val reqHeaders = HttpHeaders()
         reqHeaders.accept = listOf(MediaType.ALL)
         reqHeaders.contentType = MediaType.APPLICATION_JSON
@@ -178,33 +178,81 @@ class USPControllerAPI {
         try {
             val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
             //println(response)
-            return Pair(response.statusCodeValue, response.body)
+            return APIResponse(response.statusCodeValue, response.body?.fromJson())
         } catch (e: HttpStatusCodeException) {
             //println(e.getStatusCode().value())
             //println(e.responseBodyAsString)
-            return Pair(e.statusCode.value(), e.responseBodyAsString)
+            return APIResponse(e.statusCode.value(), e.responseBodyAsString?.fromJson())
         }
     }
 
-    fun Get(parameters: GpvObject, endpointId: String = ENDPOINT_ID): Pair<Int, WorkflowResponse?> {
-        val id = workflowTable["gpv"]!!
+    fun Get(gpvObject: GpvObject, endpointId: String = ENDPOINT_ID): APIResponse {
+        val id = workflowTable["getApi"]!!
         val reqHeaders = HttpHeaders()
         reqHeaders.accept = listOf(MediaType.ALL)
         reqHeaders.contentType = MediaType.APPLICATION_JSON
         reqHeaders.connection = listOf("close")
         reqHeaders.set("Authorization", "Bearer ${token}")
 
-        val request = HttpEntity(parameters, reqHeaders)
+        val request = HttpEntity(gpvObject, reqHeaders)
         try {
             val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
             //println(response)
-            return Pair(response.statusCodeValue, response.body?.fromJson())
+            return APIResponse(response.statusCodeValue, response.body?.fromJson())
         } catch (e: HttpStatusCodeException) {
             //println(e.getStatusCode().value())
             //println(e.responseBodyAsString)
-            return Pair(e.statusCode.value(), e.responseBodyAsString?.fromJson())
+            return APIResponse(e.statusCode.value(), e.responseBodyAsString?.fromJson())
         }
     }
+
+    fun Set(setObject: SetObject, endpointId: String = ENDPOINT_ID): APIResponse {
+        val id = workflowTable["setApi"]!!
+        return post(setObject, id, endpointId, token, restTemplate)
+    }
+
+    fun Operate(operateObject: OperateObject, endpointId: String = ENDPOINT_ID): APIResponse {
+        val id = workflowTable["operateApi"]!!
+        return post(operateObject, id, endpointId, token, restTemplate)
+    }
+
+    inline fun <reified T> post(postObj: T, id: String, endpointId: String, token: String, restTemplate: RestTemplate): APIResponse {
+        val reqHeaders = HttpHeaders()
+        reqHeaders.accept = listOf(MediaType.ALL)
+        reqHeaders.contentType = MediaType.APPLICATION_JSON
+        reqHeaders.connection = listOf("close")
+        reqHeaders.set("Authorization", "Bearer ${token}")
+
+        val request = HttpEntity(postObj, reqHeaders)
+        try {
+            val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
+            //println(response)
+            return APIResponse(response.statusCodeValue, response.body?.fromJson())
+        } catch (e: HttpStatusCodeException) {
+            //println(e.getStatusCode().value())
+            //println(e.responseBodyAsString)
+            return APIResponse(e.statusCode.value(), e.responseBodyAsString?.fromJson())
+        }
+    }
+
+
+    //==========================================================================
+    //
+    //==========================================================================
+    fun pathExists(path: String): Boolean {
+        var gpv = GpvObject()
+        gpv.add(path)
+        var response = Get(gpv)
+        return (response.body?.parameters?.size != 0)
+    }
+
+    fun deletePath(path: String) : Boolean {
+        val deleteObject = DeleteObject()
+        deleteObject.add(path)
+        val response = Delete(deleteObject)
+        return (response.code == 200)
+    }
+
 
     //==========================================================================
     // Helper Methods

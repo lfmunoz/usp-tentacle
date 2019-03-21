@@ -5,6 +5,10 @@
             // defined arguments for this workflow to be utilized by the UI/API
             arguments: [
                 {
+                    key: 'allowPartial', // message catalog suffix resolves to 'workflow.<key>.parameters'
+                    type: 'boolean' // string, numeric, boolean
+                },
+                {
                     key: 'basePath', // message catalog suffix resolves to 'workflow.<key>.parameters'
                     type: 'string'   // string, numeric, boolean
                 },
@@ -18,8 +22,7 @@
         // execution side of the script..
         execute: function (log, agent, data) {
             log.debug("ADD data: {}", data);
-            var ALLOW_PARTIAL_DEFAULTED_UI_VALUE = true;
-            var resp = yield new Add(data.parameters, data.basePath, ALLOW_PARTIAL_DEFAULTED_UI_VALUE);
+            var resp = yield new Add(data.parameters, data.basePath, data.allowPartial);
             log.debug("ADD Resp: \n{}", resp);
 
             // return 'null' or instance of WorkflowResult to finish

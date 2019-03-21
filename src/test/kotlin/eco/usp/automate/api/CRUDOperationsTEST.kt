@@ -24,11 +24,11 @@ class CRUDOperationsTEST {
     // 4 - Add Message - Allow Partial True
     // 9 - Delete Message - Allow Partial True
     @Test
-    fun `4 - Add Message - Allow Partial True`() {
+    fun `Add Message - Allow Partial True`() {
 
         var path = "Device.LocalAgent.Subscription.[ID==\"SUBS1\"]."
-        if (pathExists(path)) {
-            deletePath(path)
+        if (api.pathExists(path)) {
+            api.deletePath(path)
         }
 
         var objData = AddObject("Device.LocalAgent.Subscription.")
@@ -37,13 +37,13 @@ class CRUDOperationsTEST {
         objData.add(Parameter("NotifType", "ValueChange", true))
         objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
 
-        var result = api.Add(objData)
-        println(result.second)
-        assertThat(result.first).isEqualTo(200)
+        var response = api.Add(objData)
+        println(response.body)
+        assertThat(response.code).isEqualTo(200)
 
         path = "Device.LocalAgent.Subscription.[ID==\"SUBS2\"]."
-        if (pathExists(path)) {
-            deletePath(path)
+        if (api.pathExists(path)) {
+            api.deletePath(path)
         }
 
         objData = AddObject("Device.LocalAgent.Subscription.")
@@ -52,13 +52,13 @@ class CRUDOperationsTEST {
         objData.add(Parameter("NotifType", "ValueChange", true))
         objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
 
-        result = api.Add(objData)
-        println(result.second)
-        assertThat(result.first).isEqualTo(200)
+        response = api.Add(objData)
+        println(response.body)
+        assertThat(response.code).isEqualTo(200)
 
         path = "Device.LocalAgent.Subscription.[ID==\"SUBS3\"]."
-        if (pathExists(path)) {
-            deletePath(path)
+        if (api.pathExists(path)) {
+            api.deletePath(path)
         }
 
         objData = AddObject("Device.LocalAgent.Subscription.")
@@ -68,30 +68,16 @@ class CRUDOperationsTEST {
         objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
         objData.add(Parameter("InvalidParameter", "true", true))
 
-        result = api.Add(objData)
-        println(result.second)
-        assertThat(result.first).isEqualTo(200)
+        response = api.Add(objData)
+        assertThat(response.code).isEqualTo(200)
+        assertThat(response.body?.errors?.get(0)?.errorCode).isEqualTo(7010)
 
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Helper Methods
-    ////////////////////////////////////////////////////////////////////////////////
-    fun pathExists(path: String): Boolean {
-        var gpv = GpvObject()
-        gpv.add(path)
-        var gpvResult = api.Get(gpv)
-        if (gpvResult.second?.parameters?.size != 0) {
-            return true
-        }
-        return false
+    @Test
+    fun `Add Message - Allow Partial False`() {
+
     }
 
-    fun deletePath(path: String) {
-        val deleteObject = DeleteObject()
-        deleteObject.add(path)
-        val result = api.Delete(deleteObject)
-        assertThat(result.first).isEqualTo(200)
-    }
 
 }
