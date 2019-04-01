@@ -160,13 +160,13 @@ class USPControllerAPI {
             return APIResponse(response.statusCodeValue, response.body?.fromJson())
         } catch (e: HttpStatusCodeException) {
             //println(e.getStatusCode().value())
-            //println(e.responseBodyAsString)
+            println(e.responseBodyAsString)
             //return Pair(e.statusCode.value(), e.responseBodyAsString)
             return APIResponse(e.statusCode.value(), e.responseBodyAsString?.fromJson())
         }
     }
 
-    fun Delete(deleteObject: DeleteObject, endpointId: String = ENDPOINT_ID): APIResponse {
+    fun Delete(deleteObject: DeleteObject, endpointId: String = ENDPOINT_ID): APIResponse2 {
         val id = workflowTable["deleteApi"]!!
         val reqHeaders = HttpHeaders()
         reqHeaders.accept = listOf(MediaType.ALL)
@@ -178,11 +178,11 @@ class USPControllerAPI {
         try {
             val response = restTemplate.exchange("$USP_HOST/api/workflows/$id/agent/$endpointId", HttpMethod.POST, request, String::class.java)
             //println(response)
-            return APIResponse(response.statusCodeValue, response.body?.fromJson())
+            return APIResponse2(response.statusCodeValue, response.body?.fromJson())
         } catch (e: HttpStatusCodeException) {
             //println(e.getStatusCode().value())
             //println(e.responseBodyAsString)
-            return APIResponse(e.statusCode.value(), e.responseBodyAsString?.fromJson())
+            return APIResponse2(e.statusCode.value(), e.responseBodyAsString?.fromJson())
         }
     }
 

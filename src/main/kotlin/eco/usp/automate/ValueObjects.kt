@@ -27,6 +27,17 @@ data class APIResponse(
         var body: WorkflowResponse?
 )
 
+
+data class APIResponse2(
+        var code: Int,
+        var body: WorkflowResponse2?
+)
+
+data class WorkflowResponse2(
+        var errors: List<Errors>,
+        var parameters: List<String>
+)
+
 data class WorkflowResponse(
         var errors: List<Errors>,
         var parameters: Map<String, String>
@@ -49,7 +60,8 @@ data class Parameter(
 ///////////////////////////////////////////////////////////////
 data class AddObject(
         var basePath: String,
-        var parameters: ArrayList<Parameter> = ArrayList<Parameter>()
+        var parameters: ArrayList<Parameter> = ArrayList<Parameter>(),
+        var allowPartial: Boolean = true
 ) {
     fun add(parameter: Parameter) {
         parameters.add(parameter)
@@ -58,10 +70,11 @@ data class AddObject(
 
 data class SetObject(
         var basePath: String,
-        var parameters: ArrayList<Parameter> = ArrayList<Parameter>()
+        var updateParameters: ArrayList<Parameter> = ArrayList<Parameter>(),
+        var allowPartial: Boolean = true
 ) {
     fun add(parameter: Parameter) {
-        parameters.add(parameter)
+        updateParameters.add(parameter)
     }
 }
 
