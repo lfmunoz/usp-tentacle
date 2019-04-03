@@ -51,6 +51,7 @@ class USPControllerAPITest {
     //================================================================================
     // API Tests
     //================================================================================
+    /*
     @Test
     fun `add object`() {
         val addObject = AddObject("Device.LocalAgent.Subscription.")
@@ -63,6 +64,7 @@ class USPControllerAPITest {
         println(response.body)
 
     }
+    */
 
     @Test
     fun `gpv on Device dot DeviceInfo`() {

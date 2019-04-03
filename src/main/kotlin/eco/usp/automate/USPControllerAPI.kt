@@ -19,6 +19,11 @@ class USPControllerAPI {
 
     // Settings
     val ENDPOINT_ID = "os::002456-testing0"
+
+    //val ENDPOINT_ID = "os::00040E-E0286D483297"
+    //val ENDPOINT_ID = "proto::axagent"
+    //val ENDPOINT_ID = "os::002456-0945270B57F0_rh1"
+    //val ENDPOINT_ID = "self::gw390"
     val KEYCLOAK_USERNAME = "admin"
     val KEYCLOAK_PASSWORD = "admin"
     val CLIENT_SECRET = "414fcf10-6fa7-45c9-895f-e94314f11676"
@@ -47,6 +52,7 @@ class USPControllerAPI {
         val files = stream.bufferedReader().use { it.readLines() }
         files.forEach {
             val fileName= "/workflows/$it"
+            println(fileName)
             importWorkflow(fileName)
         }
     }
@@ -145,7 +151,7 @@ class USPControllerAPI {
      *    Operate
      */
     // allow partials is set to true by default in the workflow
-    fun Add(addObject: AddObject, endpointId: String = ENDPOINT_ID): APIResponse {
+    fun Add(addObject: AddObjectWrapper , endpointId: String = ENDPOINT_ID): APIResponse {
         val id = workflowTable["addApi"]!!
         val reqHeaders = HttpHeaders()
         reqHeaders.accept = listOf(MediaType.ALL)
@@ -206,7 +212,7 @@ class USPControllerAPI {
         }
     }
 
-    fun Set(setObject: SetObject, endpointId: String = ENDPOINT_ID): APIResponse {
+    fun Set(setObject: SetObjectWrapper, endpointId: String = ENDPOINT_ID): APIResponse {
         val id = workflowTable["setApi"]!!
         return post(setObject, id, endpointId, token, restTemplate)
     }
@@ -281,7 +287,7 @@ class USPControllerAPI {
     }
 
     fun genereateKey(name: String) : String {
-        return name.replace(" ", "").replace("-", "").replace(".js", "")
+        return name.replace(" ", "").replace("-", "").replace(".js", "").replace(".", "")
     }
 
 } // end of USPControllerAPI

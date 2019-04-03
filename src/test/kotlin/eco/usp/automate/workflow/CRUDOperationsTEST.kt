@@ -1,6 +1,9 @@
 package eco.usp.automate.workflow
 
 import eco.usp.automate.USPControllerAPI
+import eco.usp.automate.WorkflowResponse
+import eco.usp.automate.mapper
+import eco.usp.automate.toJson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -25,7 +28,9 @@ class CRUDOperationsTEST{
   fun `4AddMessageAllowPartialTrue`() {
     val workflowId = api.workflowTable["4AddMessageAllowPartialTrue"]!!
     val result = api.runWorkflow(workflowId)
-    println(result.second)
+    //println(result.second)
+    //val response = mapper.readValue(result.second, WorkflowResponse::class.java)
+    //println(response)
     assertThat(result.first).isEqualTo(200)
   }
 

@@ -39,8 +39,8 @@ data class WorkflowResponse2(
 )
 
 data class WorkflowResponse(
-        var errors: List<Errors>,
-        var parameters: Map<String, String>
+        var errors: List<Errors>?,
+        var parameters: Map<String, String>?
 )
 
 data class Errors(
@@ -58,25 +58,48 @@ data class Parameter(
 ///////////////////////////////////////////////////////////////
 // Post Objects for USP API
 ///////////////////////////////////////////////////////////////
+data class AddObjectWrapper(
+    var allowPartial: Boolean = true,
+    var parameters: ArrayList<AddObject> = ArrayList<AddObject>()
+) {
+    fun add(addObject: AddObject) {
+        parameters.add(addObject)
+    }
+}
+
+
 data class AddObject(
         var basePath: String,
-        var parameters: ArrayList<Parameter> = ArrayList<Parameter>(),
-        var allowPartial: Boolean = true
+        var parameters: ArrayList<Parameter> = ArrayList<Parameter>()
+     //   var allowPartial: Boolean = true
 ) {
     fun add(parameter: Parameter) {
         parameters.add(parameter)
     }
 }
 
+
+data class SetObjectWrapper(
+        var allowPartial: Boolean = true,
+        var updateObjs: ArrayList<SetObject> = ArrayList<SetObject>()
+) {
+    fun add(setObject: SetObject) {
+        updateObjs.add(setObject)
+    }
+}
+
+
 data class SetObject(
         var basePath: String,
-        var updateParameters: ArrayList<Parameter> = ArrayList<Parameter>(),
-        var allowPartial: Boolean = true
+        var updateParameters: ArrayList<Parameter> = ArrayList<Parameter>()
 ) {
     fun add(parameter: Parameter) {
         updateParameters.add(parameter)
     }
 }
+
+
+
 
 data class GpvObject(
         var parameters: ArrayList<String> = ArrayList<String>()
