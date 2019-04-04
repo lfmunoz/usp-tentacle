@@ -18,9 +18,11 @@ class USPControllerAPI {
     val FILE_NAME = "/workflowTable.txt"
 
     // Settings
-    val ENDPOINT_ID = "os::002456-testing0"
+    //val ENDPOINT_ID = "os::002456-testing0"
 
-    //val ENDPOINT_ID = "os::00040E-E0286D483297"
+    val ENDPOINT_ID = "os::00040E-E0286D483297"
+
+
     //val ENDPOINT_ID = "proto::axagent"
     //val ENDPOINT_ID = "os::002456-0945270B57F0_rh1"
     //val ENDPOINT_ID = "self::gw390"

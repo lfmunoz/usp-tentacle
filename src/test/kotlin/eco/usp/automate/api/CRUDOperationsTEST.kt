@@ -23,8 +23,8 @@ class CRUDOperationsTEST {
 
 
 
-    //val referenceList = "Device.Time.NTPServer1"
-    val referenceList =  "Device.LocalAgent.EndpointID"
+    val referenceList = "Device.Time.NTPServer1"
+    //val referenceList =  "Device.LocalAgent.EndpointID"
     //val trueValue = "true"
     val trueValue = "1"
     val falseValue = "0"
@@ -100,7 +100,7 @@ class CRUDOperationsTEST {
             println(response.toJson(true))
             assertThat(response.code).isEqualTo(200)
             assertThat(response.body?.errors?.size).isEqualTo(1)
-            assertThat(response.body?.parameters?.size).isGreaterThan(4)
+            assertThat(response.body?.parameters?.size).isGreaterThanOrEqualTo(4)
 
 
             path = "Device.LocalAgent.Subscription.[ID==\"SUBS1\"]."
@@ -151,7 +151,7 @@ class CRUDOperationsTEST {
 
 
         objData = AddObject("Device.LocalAgent.Subscription.")
-        objData.add(Parameter("Enable", "false", true))
+        objData.add(Parameter("Enable", falseValue, true))
         objData.add(Parameter("ID", "SUBS2", true))
         objData.add(Parameter("NotifType", "ValueChange", true))
         //objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
@@ -348,8 +348,9 @@ class CRUDOperationsTEST {
         val objData = AddObject("Device.LocalAgent.Subscription.")
         objData.add(Parameter("ID", "SUBS1", true))
         objData.add(Parameter("Enable", trueValue, true))
-        //  objData.add(Parameter("NotifType", "ValueChange", true))
-        //objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
+        objData.add(Parameter("NotifType", "ValueChange", true))
+        objData.add(Parameter("ReferenceList", referenceList, true))
+
         addObjectWrapper.add(objData)
         var addObjectResponse = api.Add(addObjectWrapper)
         println(addObjectResponse.toJson(true))
@@ -373,8 +374,8 @@ class CRUDOperationsTEST {
         val objData = AddObject("Device.LocalAgent.Subscription.")
         objData.add(Parameter("ID", "SUBS1", true))
         objData.add(Parameter("Enable", trueValue, true))
-        //  objData.add(Parameter("NotifType", "ValueChange", true))
-        //objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
+        objData.add(Parameter("NotifType", "ValueChange", true))
+        objData.add(Parameter("ReferenceList", referenceList, true))
         addObjectWrapper.add(objData)
         var addObjectResponse = api.Add(addObjectWrapper)
         println(addObjectResponse.toJson(true))
@@ -437,8 +438,8 @@ class CRUDOperationsTEST {
         val objData = AddObject("Device.LocalAgent.Subscription.")
         objData.add(Parameter("ID", "SUBS1", true))
         objData.add(Parameter("Enable", trueValue, true))
-      //  objData.add(Parameter("NotifType", "ValueChange", true))
-        //objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
+        objData.add(Parameter("NotifType", "ValueChange", true))
+        objData.add(Parameter("ReferenceList", referenceList, true))
         addObjectWrapper.add(objData)
         var addObjectResponse = api.Add(addObjectWrapper)
         println(addObjectResponse.toJson(true))
@@ -471,7 +472,7 @@ class CRUDOperationsTEST {
         println(response.toJson(true))
         assertThat(response.code).isEqualTo(200)
         assertThat(response.body?.parameters?.size).isEqualTo(1)
-        assertThat(response.body?.errors?.size).isEqualTo(1)
+        assertThat(response.body?.errors?.size).isEqualTo(2)
 
     }
 
