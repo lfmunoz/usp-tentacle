@@ -336,6 +336,63 @@ class CRUDOperationsTEST {
 
     }
 
+
+    @Test
+    fun `9 - Delete Message - Allow Partial True`() {
+
+        var path = "Device.LocalAgent.Subscription.[ID==\"SUBS1\"]."
+        if (api.pathExists(path)) {
+            api.deletePath(path)
+        }
+        val addObjectWrapper = AddObjectWrapper(allowPartial = false)
+        val objData = AddObject("Device.LocalAgent.Subscription.")
+        objData.add(Parameter("ID", "SUBS1", true))
+        objData.add(Parameter("Enable", trueValue, true))
+        //  objData.add(Parameter("NotifType", "ValueChange", true))
+        //objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
+        addObjectWrapper.add(objData)
+        var addObjectResponse = api.Add(addObjectWrapper)
+        println(addObjectResponse.toJson(true))
+
+        val deleteObject = DeleteObject(true)
+        deleteObject.add("Device.LocalAgent.Subscription.[ID==\"SUBS1\"].")
+        deleteObject.add("Device.LocalAgent.Subscription.10000.")
+        val response = api.Delete(deleteObject)
+        assertThat(response.code).isEqualTo(200)
+        assertThat(response.body?.parameters?.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `10 - Delete Message - Allow Partial False`() {
+
+        var path = "Device.LocalAgent.Subscription.[ID==\"SUBS1\"]."
+        if (api.pathExists(path)) {
+            api.deletePath(path)
+        }
+        val addObjectWrapper = AddObjectWrapper(allowPartial = false)
+        val objData = AddObject("Device.LocalAgent.Subscription.")
+        objData.add(Parameter("ID", "SUBS1", true))
+        objData.add(Parameter("Enable", trueValue, true))
+        //  objData.add(Parameter("NotifType", "ValueChange", true))
+        //objData.add(Parameter("ReferenceList", "Device.LocalAgent.EndpointID", true))
+        addObjectWrapper.add(objData)
+        var addObjectResponse = api.Add(addObjectWrapper)
+        println(addObjectResponse.toJson(true))
+
+
+        val deleteObject = DeleteObject(false)
+        deleteObject.add("Device.LocalAgent.Subscription.[ID==\"SUBS1\"].")
+        deleteObject.add("Device.LocalAgent.Subscription.10000.")
+
+        try {
+            val response = api.Delete(deleteObject)
+        } catch (e: Exception) {
+
+        }
+
+    }
+
+
     @Test
     fun `11 - Get Message - Parameter Path Only`() {
         val obj = GpvObject()
